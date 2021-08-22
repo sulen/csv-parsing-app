@@ -1,12 +1,13 @@
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { UsersModule } from '../../src/users/users.module';
 import { TeamsModule } from '../../src/teams/teams.module';
-import { Connection, EntityManager, QueryRunner, Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { User } from '../../src/users/user.entity';
 import { userStub } from './stubs/user.stub';
+import { getTypeOrmModule, setupQueryRunner } from '../common';
+import { getValidationPipe } from '../../src/main';
 
 describe('User e2e', () => {
   let app: INestApplication;
@@ -15,44 +16,18 @@ describe('User e2e', () => {
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        UsersModule,
-        TeamsModule,
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5434,
-          username: 'postgres',
-          password: 'jWsn7340vDSw',
-          database: 'postgres',
-          autoLoadEntities: true,
-          synchronize: true,
-        }),
-      ],
+      imports: [UsersModule, TeamsModule, getTypeOrmModule()],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        transformOptions: {
-          enableImplicitConversion: true,
-        },
-      }),
-    );
+    app.useGlobalPipes(getValidationPipe());
 
     userRepository = moduleFixture.get('UserRepository');
 
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    const dbConnection = moduleFixture.get(Connection);
-    const manager = moduleFixture.get(EntityManager);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    queryRunner = manager.queryRunner =
-      dbConnection.createQueryRunner('master');
+    queryRunner = setupQueryRunner(moduleFixture);
   });
 
   beforeEach(async () => {

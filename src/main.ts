@@ -5,16 +5,17 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  app.useGlobalPipes(getValidationPipe());
 
   await app.listen(3000);
 }
 bootstrap();
+
+export const getValidationPipe = () =>
+  new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  });

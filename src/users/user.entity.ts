@@ -23,6 +23,14 @@ export class User {
   @Index({ unique: true })
   email: string;
 
-  @ManyToOne(() => Team, (team) => team.users, { nullable: true })
+  @Column({
+    nullable: true,
+  })
+  roleDescription: string | null;
+
+  @ManyToOne(() => Team, (team) => team.users, {
+    nullable: true,
+    cascade: true,
+  })
   team: Team;
 }

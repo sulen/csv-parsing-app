@@ -4,11 +4,13 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamsModule } from './teams/teams.module';
 import { UsersModule } from './users/users.module';
+import { UsersCsvModule } from './users-csv/users-csv.module';
 
 @Module({
   imports: [
     TeamsModule,
     UsersModule,
+    UsersCsvModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

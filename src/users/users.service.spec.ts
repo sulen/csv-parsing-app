@@ -1,14 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Team } from '../teams/team.entity';
-
-type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
-const createMockRepository = <T = any>(): MockRepository<T> => ({
-  findAndCount: jest.fn(),
-});
+import { createMockRepository, MockRepository } from '../../test/common';
 
 describe('UsersService', () => {
   let service: UsersService;
